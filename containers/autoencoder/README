@@ -1,0 +1,11 @@
+Running Variational Autoencoder Neural Network in Singularity Environment
+
+Download Docker image as Singularity image:
+
+	singularity pull docker://mvpandapaw/tensorflow1.15.5_gpu_jupyter_moredependencies:v1
+
+	(Underlying Dockerfile is in this folder)
+
+Scripts can then be run as follows:
+
+	singularity exec tensorflow1.15.5_gpu_jupyter_moredependencies-v1.simg python script.py

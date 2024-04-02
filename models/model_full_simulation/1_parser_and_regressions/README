@@ -1,0 +1,27 @@
+Define:
+
+  - number fake features 
+
+  - number tumor samples per feature, they will have increased mut rates in the bins with "high" levels of specific feature
+
+  - total number normal samples
+
+  - total size of the covered genome --> FIXED at 3e9
+
+    - all bins are of the same size, i.e. genome size / N feature levels combinations
+
+
+mut increase per bin (sampled from a neg. binomial dist.)
+
+  - draw random n mutations at each bin with "high" as the level of the target feature, if this is a tumor sample
+    - the mean of the distribution is the especified FRACTION of the total #nucleotides that can be mutated, i.e. of the nt at risk (==bin_size)
+
+  - draw random n mutations at each bin WITHOUT "high" as the level of the target feature, if this is a tumor sample; if it is a normal sample, this is done across all bins
+    - again, the mean is the FRACTION of the total #nucleotides that can be mutated, i.e. of the nt at risk (==bin_size)
+    - typically smaller than the ones for target bins (above)
+
+
+run glm.nb per sample and bind rows
+
+
+WARNING: many times a normal sample (Especially when very low mut rates are applied) fails the regression, therefore there often are less normal samples than especified

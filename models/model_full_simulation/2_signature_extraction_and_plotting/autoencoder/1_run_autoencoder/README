@@ -1,0 +1,5 @@
+total_number_features == 8 & 
+number_tumors_per_feature == 25 & 
+total_number_normal_samples == 50 & 
+mean_fraction_of_nt_at_risk_mutated_in_target_bins == 2e-05 &
+mean_fraction_of_nt_at_risk_mutated_in_nontarget_bins <= 1e-10

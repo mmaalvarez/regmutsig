@@ -1,0 +1,362 @@
+TODO
+	in cases where 1 signature (similar SBS spectra) gets split into 2 signatures (regional spectra) --> check exposures of the split signatures: are they associated with different genotypes in our cell line dataset?
+	
+	align parts of the plot
+
+	An example of 'bi-cross-validation' (blanking out a few cells here and there) usage for mutational signatures extraction. https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009119
+	Perhaps interesting – the conceptually similar paper I mentioned, looking at regional distribution to decompose signatures (germline variants) https://www.science.org/doi/10.1126/science.aba7408  It uses the „reflection test“ method to select genomic resolution (a metaparameter of the method) and to discard individual signatures – that test would be related to ours splitting into odd/even chromosomes.
+
+	WARNING
+		..b1..R script doesn't check if a sample does not have any mutation at all (which would be unexpected anyways)
+
+
+UPD10: model_5
+	only
+		500 colorectal	filter(OriginalType=="Colorectum" & tissue=="colorectum")
+		500 lung NSCC	filter(OriginalType=="Lung_Non-small cell carcinoma")
+		500 melanoma	filter(OriginalType %in% c("Skin", "MELA-AU", "SKCM", "SKCM_Melanoma"))
+	removed 4 features that did not have a ks pval <0.1 in real vs. null features pvalues correlation (in cell lines)
+		SETD2
+		53BP1
+		KAT2A
+		CREBBP
+	added DHS, as positive control: UV-mutated melanomas and tobacco-mutated lung cancers should have an enrichment of mutations in DHS regions
+
+UPD9: model_4
+	calculated each feature's cutoff score based on the score interval with a maximum decrease of normalized mut load across all pooled samples
+		using only repliseq level6 (earliest) to remove RT effect (i.e. early RT potentially correlated to high scores o some features)
+	model_null now completely shuffles scores across ranges per feature, rather than just shift +50kbp as this wasn't enough
+	tried -+1 score bin for cutoff, to see whether it matters a lot for final results, but it failed since in many cases there were only 1 bin (high or low), if want to fix this and try again pipelines are in resources/OLD_models/cutoff_minus_plus_1/ (4b is -1 and 4c is +1)
+  ICA and kurtosis
+  Also kurtosis of NMF signature exposures: additional criterion to determine #factors×K in heatmaps
+  NMF: split genome in 2 parts (odd/even chromosomes) to check consistency
+  Matching to Cosmic signatures: show 1stmatch+2ndmatch+maybe 3rd
+MUSE-XAE - https://www.biorxiv.org/content/10.1101/2023.10.23.562664v1.full.pdf 
+
+UPD8: model_3
+	try different genome binarization (per feature): 'low' == covered_genome>75% & FE>=1
+
+UPD7: model_null (from model_2 onwards)
+	shift the coordinates of all ranges of each regional feature +50kbp, so that the somatic mutation rates stop correlating the feature levels in all samples (and therefore the reg. p-vals are all similar (and probably much larger than 0), i.e. following a uniform distribution)
+
+UPD6: model2
+	Poisson instead of OR (logistic) both for reg features and SBS96
+	feature abundance level genomic binarization: "high" regions vs. "low +-50kbp flanking high regions" regions, without overlaps
+	Petljak data added
+	compare PCA of regional+SBS NMF exposures vs. PCA of SBS-only NMF exposures, see whether the clusterings change and regional can give some extra info
+	In random forests (NMF and autoenc), I downsample the normal samples (i.e. with a '0') to match the number of case samples ('1's)
+
+UPD5:
+	Analyze also Zou and Kucab in same pipeline as Marcel's, since each sample is independently analyzed
+		- But split the downstream analyses (PCA, NMF, AE, RFs) by dataset, as until now
+	Add the 29 ENCODEC proteins (gpt4)
+		- Pooling 2-3 top tier cell lines when available
+		- keep without trinuc matching
+	Add other DNA repair stuff I have
+		- DSB
+		- NER (UV, BPDE, platinum)
+	Add H3K36me3 from ENCODE (keep also Fran's)
+	Keep both RMDflat and Repliseq
+	Trinuc matching:
+		- begin analyses with original tracks, i.e. without having been trinuc matched
+		- dont overlap tracks, keep them in separate Channels, but chromosomes are not channeled anymore
+		- within each "track Channel":
+			- binarize whole genome's trinucleotides into 2 bins/"ranges" (high and low level of feature), i.e. collapsing all ranges into 2 pseudoranges from which we only care about the frequencies of each trinucleotide (32 types)
+			- do the trinuc matching (1st on frequencies, then actually removing trinucleotides, as now) between each feature's 2 bins
+			- calculate the offset for that feature (instead of doing a general offset for all features overlapped as until now), so there will be 2 values, 1 per bin
+		- merge each sample's somatic data (separately through a second set of Channels) to each feature (with the original ranges), collapse again into 2 pseudoranges/bins, and append to its offset when it's ready
+			- run regression per sample and feature
+		- colbind results
+	Logistic regression instead of NB, now that I just have a contingency table (same as with SBS96):
+
+		feature_level	SNVs	non-SNV trinucs
+		low 			323 	213432434
+		high 			89 		32423412
+
+UPD4:
+	Added SIRT6
+	good mappability regions from /g/strcombio/fsupek_cancer3/malvarez/chromatin_info/good_mappability_regions/k50.umap.parsed.bed
+		applied in 2_trinuc_freqs.R, to map_features (generated in 1_*.R)
+	removed 1 sample per pair of "technical replicates", Maia re-did calling on the kept one per pair
+	removed the "chromatin_features" mode/option, now all features are in dnarep_marks.csv
+	removed median score calculation and binarization, as since I do trinuc matching I already binarize the scores for the matching
+
+UPD3:
+	RT: use Marina's score
+	Exclude RNAseq and DNase
+	Single regressions (not pairwise)
+	Resampling from CI 80%
+	AE: #hidden layers, #neurons in hidden layers, #neurons in encoded layer
+
+UPD2: doing PCA etc also for regional features alone, without SBS
+
+UPD1: only marcel data
+
+
+1) full simulation
+
+	- grid of PCAs with stabilities for 4 different (each):
+
+		- #features
+
+		- #tumors
+
+		- #normals
+		
+		- mean #SNVs in target bins
+
+		- mean #SNVs in nontarget bins
+
+	- PCA (and NMF and AE) perfectly classify samples with
+
+	  	"number_features" = 8
+	  	"number_tumors_per_feature" = 20
+	  	"total_number_normal_samples" = 100
+	  	"mean_fraction_of_nt_at_risk_mutated_in_target_bins" = 2e-5 	--> if total nt at risk 3e9, and 256 bins, ~240 muts at each of the 128 target bins (i.e. "high" for featureX) == 30K muts, in line with Marcel's with more mutations (max thereof ~40K?) 
+	  	"mean_fraction_of_nt_at_risk_mutated_in_nontarget_bins" = 5e-8	--> much lower muts in nontarget bins, but still some (~0.6 at each bin == 150 muts in total)
+
+			This uses realistic number_features (8) and (kind of) mut rate in target bins
+
+			But it uses an unrealistic/idealized too clean mutagenesis, i.e. mutations are strictly enriched in the 128 "featureX-high" bins in featureX-/- samples, etc
+
+
+2) real data 
+
+	 i) Marcel
+
+	ii) Zou (BERko + MMRko + control samples) -- separately from Marcel's (there is batch effect)
+
+	- 2 types of coefficients matrices
+
+		a) Only logistic regression coefficients of SBS (i.e. binning genome in 96 bins --> the SBS)
+
+			- reuses the offset table from b)
+
+		b) "a" combined with the pairwise-simple-lowest coefficients of regional MMR+BER genome features
+
+			- 'pairwise-simple-lowest': 
+
+				- e.g. #SNVs ~ MSH6 + RepliSeq + offset --> MSH6.w.RepliSeq β and RepliSeq.w.MSH6 β
+				- For e.g. MSH6, we have 10 × MSH6.w.* (for 10 features)
+				- Keep the MSH6.w.* with closest-to-zero coefficient, and call it MSH6: the 'most corrected'
+				- In the end the coeff. matrix has 10 'pairwise-simple-lowest' coefficients + 96 SBS coefficients
+
+			-  reuses the the 96 SBS regression coefficients from a): these are actually (or should be) the same/similar in model 'only SBS' and model 'regional+SBS', since it is using the same data
+
+		- CRUCIAL: does b) increase/build on the ability of a) to classify dMMR and/or dBER samples based on the expected gene-/- effects?
+
+					- see docs.google.com/document/d/1_kvwdevPnalTsKLTsCB7a1tjTPj7Zo_dnJbZiECuYHo/edit
+
+			- PCA	
+					Compare stability scores (cosine distance between samples, partition around medoids, mean silhouette) between a) and b)
+
+					In b), decomposed each PC's % variance explained into that explained by SBS and that by the regional
+
+			- NMF
+					Compare random forest's scores (OOB, acc, prec) for classifying dMMR vs. MMRwt and/or dBER vs. BERwt -based on best model's (nFact×k with highest stability scores) exposures- between a) and b)
+
+			- AE
+					removed the "Variational" part of Mischan's code (see resources/autoencoder/vae_to_ae__gpt4; there, simulations_VAE/ contains the previous code) -- instead, using a diff. permuted table per epoch
+
+					Compare random forest's scores -based on latent layer means- between a) and b)
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Split Zou and Marcel
+
+zou info from /g/strcombio/fsupek_cancer3/malvarez/WGS_tumors/somatic_variation/cell_lines/zou_2021/processed/sample_gene_ko.tsv
+
+
+UPD6: I didn't do the abs(beta)>10 --> 0, as this removed a lot of signal. Maybe some are failed regressions, but most not
+
+
+UPD5:
+	- added BER features OGG1 and NEIL1
+
+	- will compare signatures based only on SBS vs SBS+regional features (see whether the latter adds some value)
+
+
+UPD4:
+	- added 96 SBS (interaction between each trinuc and all the others, stratified by nt_at_risk and mut_nts)
+
+	- removed tumor samples for now
+
+UPD3:
+	- added interactions between every pair of features (but keeping all individual features in the regression, although their coefficients are ignored afterwards)
+
+	- increased MSS samples by 2-fold (i.e. ×2 times the n of MSI tumors)
+
+	- ignored 58 samples whose simple regression fails (failed_regressions.tsv)
+
+
+UPD 2: tumors mut burdens are downsampled to tops 20SNVs/Mbp
+
+
+UPDATE: added MMRwt samples
+
+	Zou: 8 controls + the low burden MSK0.123_s1
+
+	tumors: 162 MSS samples
+
+			keeping source and tissue proportions in 162 MSI samples
+
+			then prioritize the purple's msStatus and msIndelsPerMb ("MSS" that have the lowest msIndelsPerMb) rather than random
+
+
+
+WGS data
+	
+	Marcel K562: 24 MMR-/- pairs
+
+		ORIGINAL: /g/strcombio/fsupek_data/MMR_BER_Project/Processed_data/Calling/Strelka2/VCFs_SUPEK_24_28/Discrete_variants/*_REP1.vcf
+		PARSED: /g/strcombio/fsupek_cancer3/malvarez/WGS_tumors/somatic_variation/cell_lines/marcel_K562/parse_vcfs/res/muts_pass_*_REP1.csv
+
+		I include all, they vary in their MMRdef, ranging between strong/mid/weak/none (see metadata)
+
+
+	Zou iPSC MMR-/-
+
+		/g/strcombio/fsupek_cancer3/malvarez/WGS_tumors/somatic_variation/cell_lines/zou_2021/processed/data/
+
+		Kept only: Zou_iPSC_MMRko.tsv:
+				MSK0.3_s4	MSH6
+				MSK0.3_s5	MSH6
+				MSK0.3_s6	MSH6
+				MSK0.3_s8	MSH6
+				MSK0.4_s2	MSH6
+				MSK0.4_s3	MSH6
+				MSK0.4_s4	MSH6
+				MSK0.4_s7	MSH6
+				MSK0.120_s1	MSH2
+				MSK0.120_s2	MSH2
+				MSK0.120_s3	MSH2
+				MSK0.172_s1	MLH1
+				MSK0.172_s2	MLH1
+				MSK0.173_s1	MLH1
+				MSK0.173_s2	MLH1
+				MSK0.123_s2	PMS1
+				MSK0.130_s1	PMS1
+				MSK0.130_s2	PMS1
+				MSK0.170_s1	PMS2
+				MSK0.170_s2	PMS2
+				MSK0.171_s1	PMS2
+				MSK0.171_s2	PMS2
+
+		 NOTE: 'MSK0.123_s1	PMS1' excluded since it's not in "list_treated_samples_mutburden_above_mean_of_controls.tsv", i.e. too low mut burden, maybe not effectively KO
+
+
+	MMRdef tumors
+
+		/g/strcombio/fsupek_cancer3/malvarez/WGS_tumors/somatic_variation/TCGA_PCAWG_Hartwig_CPTAC_POG_MMRFCOMMPASS/data/
+		
+		Kept only: tumors_MMRdef.tsv
+
+			MSI_status %in% c("HYPER", "MSI")
+
+
+
+Features (trinuc-matched beforehand, symlinks in /g/strcombio/fsupek_data/users/malvarez/git/trinucleotide_matching_tracks/matched_beds_symlinks/)
+
+	group1: mutrates differences between bins (reg coeff) known to change between MMRwt and MMRdef samples
+		
+		RepliSeq	ORIG: /g/strcombio/fsupek_cancer3/malvarez/chromatin_info/replication_time/fran_pooled_bins_replication_time/fran_legacy_parsed/RepliSeq_pooled8_merged_1-3vs4-6.bed
+			NOTE: usually RepliSeq goes as "chromatin_feature" with 6 levels, but here it's in dnarep_marks with 2 levels (1-3of6 vs. 4-6of6)
+
+		H3K36me3	ORIG: /g/strcombio/fsupek_cancer3/malvarez/chromatin_info/histone_methylation_and_DHS/roadmap/fran_legacy_parsed/inputBeds_pooled8_merged_2bins/H3K36me3_pooled8_merged_2bins.bed
+			NOTE: 0of3+1of3 vs. 2of3+3of3
+
+	group2: ...known to not change...
+	
+		RnaSeq		ORIG: /g/strcombio/fsupek_cancer3/malvarez/chromatin_info/rna_seq/bins_histone_marks_rnaseq_pooled_fran/fran_legacy_parsed/RnaSeq-txnStrandCorrected_pooled8_merged_2bins.bed
+			NOTE: 0of3 vs. 1of3+2of3+3of3
+
+		DHS			ORIG: /g/strcombio/fsupek_cancer3/malvarez/chromatin_info/histone_methylation_and_DHS/roadmap/fran_legacy_parsed/inputBeds_pooled8_merged_2bins/DNase_pooled8_merged_2bins.bed
+			NOTE: 0of3+1of3 vs. 2of3+3of3
+
+	group3: ...potential change...
+
+		SETD2		ORIG: /g/strcombio/fsupek_cancer3/malvarez/chromatin_info/DNA_repair__protein_binding/DNA_repair/MMR/MSH6_SETD2_H3K36me3_guominli/2_fold_enrichment_vs_input/bedgraphs_fold_enrich/SRR13314134_sorted_FE_3ntMatched.bed.gz	# SETD2_control chip-seqGraph
+		
+		MSH6		ORIG: /g/strcombio/fsupek_cancer3/malvarez/chromatin_info/DNA_repair__protein_binding/DNA_repair/MMR/MSH6_SETD2_H3K36me3_guominli/2_fold_enrichment_vs_input/bedgraphs_fold_enrich/SRR13314132_sorted_FE_3ntMatched.bed.gz	# MSH6_control chip-seqGraph
+		
+		exons		ORIG: /g/strcombio/fsupek_cancer3/malvarez/chromatin_info/exon_positions/get_exons/lifted_hg19_chr_exons_vs_bgGenome.bed.gz
+			NOTE: - exons include only exons from genes that are not CEG, TSG, or OG 
+							and not 1st nor last exons at each gene
+				  - bgGenome includes NO exons (not even from CEG, TSG, and OG, nor 1st and last exons at each gene)
+				  					NO 5bp from the start and end of every intron, nor 5bp from 5'UTR and first 5bp from 3'UTR
+		
+		H3K36me2	ORIG: /g/strcombio/fsupek_cancer3/malvarez/chromatin_info/histone_methylation_and_DHS/H3K36me2/pooled_samples/
+			NOTE: pooled 7 samples (see sample_paths.tsv in that folder)
+			
+
+--------------------------------------------------------------------------------------------------------------
+
+
+
+- model_simple MMR_BER + pairwise interactions + SBS combines MMR features + BER features
+	
+		- too few muts in some bins, so only 30 samples pass simple regression
+
+
+- pipeline: 
+
+	1st build singularity container (need sudo)
+
+	2nd do parser and regressions
+
+	3rd do NMF and plotting
+
+
+
+- each model (combination of chromatin features, DNA repair markers, etc) has a separate folder
+
+
+- sample_ids.tsv is from 
+	/g/strcombio/fsupek_cancer3/malvarez/WGS_tumors/somatic_variation/TCGA_PCAWG_Hartwig_CPTAC_POG_MMRFCOMMPASS/metadata/comb_metadata_final_6datasets__noconsent_samples_removed__hartwig_upd.tsv
+	
+	- split of samples by n of SNVs (which increases memory usage a lot) in 
+		/g/strcombio/fsupek_cancer3/malvarez/WGS_tumors/somatic_variation/TCGA_PCAWG_Hartwig_CPTAC_POG_MMRFCOMMPASS/metadata/bin_samples_by_nrows/
+		
+	
+- chromatin maps from
+
+ /g/strcombio/fsupek_cancer3/malvarez/chromatin_info/
+													histone_methylation_and_DHS/
+													DNA_methylation/
+													replication_time/
+													rna_seq/
+													copy_number/
+	- NOTE: will just use Replication time
+
+			name in chromatin_features.tsv has to match the column name of the feature abundance in its chipseq file, e.g. 'RepliSeq', no 'RepliSeq_6bins'
+
+
+- bound protein abundance maps from
+													bound_protein_abundance/
+																			208_proteins_ENCODE/	(CTCF, BRCA1)
+																			CTCFmotif_and_cohesin/
+																			laminb1/
+
+	- example chromatin feature paths
+	
+		name	path
+		DNase_pooled8_merged_2bins	/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/histone_methylation_and_DHS/roadmap/fran_legacy_parsed/inputBeds_pooled8_merged_2bins/DNase_pooled8_merged_2bins.bed
+		H3K36me3_pooled8_merged_2bins	/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/histone_methylation_and_DHS/roadmap/fran_legacy_parsed/inputBeds_pooled8_merged_2bins/H3K36me3_pooled8_merged_2bins.bed
+		H3K9me3_pooled8_merged_2bins	/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/histone_methylation_and_DHS/roadmap/fran_legacy_parsed/inputBeds_pooled8_merged_2bins/H3K9me3_pooled8_merged_2bins.bed
+		RnaSeq-txnStrandCorrected_pooled8_merged_2bins	/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/rna_seq/bins_histone_marks_rnaseq_pooled_fran/fran_legacy_parsed/RnaSeq-txnStrandCorrected_pooled8_merged_2bins.bed
+		RepliSeq	/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/replication_time/fran_pooled_bins_replication_time/fran_legacy_parsed/RepliSeq_pooled8_merged_6bins.bed
+		RepliSeq_2bins	/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/replication_time/fran_pooled_bins_replication_time/fran_legacy_parsed/RepliSeq_pooled8_merged_2bins.bed
+		CtcfCohesin_pooled8_merged_2bins	/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/bound_protein_abundance/CTCFmotif_and_cohesin/fran_legacy_parsed/inputBeds_pooled8_merged_2bins/CtcfCohesin_pooled8_merged_2bins.bed
+
+
+- DNA repair activity marks from
+																			DNA_repair/
+																						BER/
+																						NER/	Here the 2 reps BPDE_tXRseq_rep[1,2]_2strands have conflicting strands, I'm just setting them to '*'
+																						MMR/
+																						DSB/
+
+
+results.tsv is the metadata file merged with the reg coefficients and pvalues from the regression of each sample

@@ -1,0 +1,5 @@
+MBD4,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/hg18_to_hg19/bed_hg19/hg19_lifted_no_cups_blacklist_MBD4.bed
+SETD2,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/DNA_repair/MMR/MSH6_SETD2_H3K36me3_guominli/2_fold_enrichment_vs_input/bedgraphs_fold_enrich/SRR13314134_sorted_FE.bdg
+53BP1,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/DNA_repair/DSBR/NHEJ/XRCC4_RAD51_53BP1/53BP1/HWNTLBGX3_53BP1_G1_OHT_17s005725-1-1_Clouaire_lane117s005725_sequence_normalized.bw
+KAT2A,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/res/KAT2A_Signal_pooled_samples.bed
+CREBBP,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/res/CREBBP_Signal_pooled_samples.bed
