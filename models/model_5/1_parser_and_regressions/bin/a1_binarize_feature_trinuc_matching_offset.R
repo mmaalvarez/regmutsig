@@ -30,7 +30,7 @@ args = commandArgs(trailingOnly=TRUE)
 
 # load utils.R (functions)
 if(interactive()){
-  source("/g/strcombio/fsupek_data/users/malvarez/projects/RepDefSig/bin/utils.R")
+  source("/g/strcombio/fsupek_data/users/malvarez/projects/regmutsig/bin/utils.R")
 } else {
   source(args[1])
 }
@@ -98,9 +98,19 @@ if(is.numeric(cutoff_score)){
                                      "0\\&1" = "low", 
                                      "0" = "low", 
                                      "bgGenome" = "low",
+                                     "normal DNA" = "low",
+                                     "no" = "low",
                                      "4\\-6" = "high", 
                                      "2\\&3" = "high", 
-                                     "1\\-3" = "high"))) %>% 
+                                     "1\\-3" = "high",
+                                     "yes" = "high",
+                                     "a-phased_repeats" = "high",
+                                     "direct_repeats" = "high",
+                                     "g-quadruplex_forming_repeats" = "high",
+                                     "inverted_repeats" = "high",
+                                     "mirror_repeats" = "high",
+                                     "short_tandem_repeats" = "high",
+                                     "z-dna_motifs" = "high"))) %>% 
     makeGRangesFromDataFrame(keep.extra.columns = T)
 }
 rm(feature_file_good_mappability) ; gc()

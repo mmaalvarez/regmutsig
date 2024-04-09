@@ -213,7 +213,7 @@ results_regional_feature_regressions
     .println { "Poisson regional feature regression results for all samples saved in res/results_regional_feature_regressions_all_samples.tsv" }
 
 
-/*
+
 process offset_good_mappability_regions {
 
     // create offset from full good_mappability_regions, without trinuc matching, for the SBS96 regressions
@@ -293,4 +293,3 @@ process sample_somatic_muts_SBS96_regression {
 results_SBS96_regressions
     .collectFile(name: 'res/results_SBS96_regressions_all_samples.tsv', keepHeader: true)
     .println { "Poisson SBS96 regression results for all samples saved in res/results_SBS96_regressions_all_samples.tsv" }
-*/

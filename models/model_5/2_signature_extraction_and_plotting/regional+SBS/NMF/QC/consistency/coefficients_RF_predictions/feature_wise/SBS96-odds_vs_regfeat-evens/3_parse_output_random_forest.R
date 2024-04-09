@@ -5,7 +5,7 @@ conflict_prefer("rename", "dplyr")
 conflict_prefer("select", "dplyr")
 conflict_prefer("map", "purrr")
 
-regfeatures_list = read_tsv("../../1st_half_genome/res/results_regional_feature_regressions_all_samples.tsv") %>% 
+regfeatures_list = read_tsv("../../../1st_half_genome/res/results_regional_feature_regressions_all_samples.tsv") %>% 
   filter(feature_type == "regional_feature") %>% 
   mutate(feature_name = gsub("_", " ", feature_name)) %>% 
   pull(feature_name) %>% 
@@ -14,12 +14,12 @@ regfeatures_list = read_tsv("../../1st_half_genome/res/results_regional_feature_
 res = read_tsv("rf_outputs/res.tsv") %>% 
   mutate(topredict = gsub(".*__resampled_", "Predictor resampled ", topredict),
          topredict = gsub("__|_", " ", topredict),
-         topredict = gsub("2nd half.*", "Predictor 2nd genome half", topredict),
          topredict = gsub(" original", "", topredict),
-         topredict = gsub("1st half ", "1st genome half ", topredict),
          topredict = gsub("CI100%", "6 SD", topredict),
+         topredict = gsub("2nd half ", "", topredict),
          topredict = factor(topredict,
-                            levels = c(paste0("1st genome half ", regfeatures_list),
+                            levels = c(regfeatures_list,
+                                       "SBS96",
                                        "Predictor 2nd genome half",
                                        "Predictor resampled 6 SD",
                                        paste0("Predictor resampled CI", c(99.99, 75, 50, 25, 5), "%"))),
@@ -35,12 +35,8 @@ res_reg_feat_SBS96 = ggplot(res %>%
                                                                  "SBS96",
                                                                  "Regional feature"),
                                          topredict = gsub("1st genome half ", "", topredict)) %>%
-                                  filter(topredict == "Predictor 2nd genome half" | (predictor_type == "SBS96" & !str_detect(topredict, "Predictor resampled"))) %>%
-                                  mutate(topredict = ifelse(predictor != "SBS96",
-                                                            predictor,
-                                                            topredict),
-                                         topredict = gsub("Predictor 2nd genome half", "SBS96", topredict),
-                                         predictor = "1st genome half"),
+                                  filter(!str_detect(topredict, "Predictor resampled")) %>%
+                                  mutate(predictor = "1st genome half"),
                                 aes(x = predictor, 
                                     y = topredict)) +
   geom_tile(aes(fill = R2)) +
@@ -75,12 +71,8 @@ res_reg_feat_SBS96_scatter = ggplot(res %>%
                                                                      "SBS96",
                                                                      "Regional feature"),
                                              topredict = gsub("1st genome half ", "", topredict)) %>%
-                                      filter(topredict == "Predictor 2nd genome half" | (predictor_type == "SBS96" & !str_detect(topredict, "Predictor resampled"))) %>%
-                                      mutate(topredict = ifelse(predictor != "SBS96",
-                                                                predictor,
-                                                                topredict),
-                                             topredict = gsub("Predictor 2nd genome half", "SBS96", topredict),
-                                             predictor = "1st genome half") %>% 
+                                      filter(!str_detect(topredict, "Predictor resampled")) %>%
+                                      mutate(predictor = "1st genome half") %>% 
                                       pivot_wider(names_from = predictor_type,
                                                   values_from = R2) %>% 
                                       select(-predictor),
@@ -91,8 +83,8 @@ res_reg_feat_SBS96_scatter = ggplot(res %>%
   ggrepel::geom_text_repel(aes(label = topredict),
                            size = 2) +
   theme_bw() +
-  xlab("R2 of regional feature self-prediction (odd chromosomes predict even chromosomes)") +
-  ylab("R2 of SBS96 odd chromosomes prediction of regional feature odd chromosomes") +
+  xlab("R2 of a regional feature's ODD chromosomes SELF-predicting its EVEN chromosomes") +
+  ylab("R2 of SBS96 ODD chromosomes predicting a regional feature's EVEN chromosomes") +
   theme(text = element_text(size = 10))
 ggsave("res_reg_feat_SBS96_scatter.jpg",
        plot = res_reg_feat_SBS96_scatter,

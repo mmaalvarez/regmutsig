@@ -1,5 +1,47 @@
+- due to BAD qqplots of pvalues (of regression with real vs shuffled coordinates)
+@ /g/strcombio/fsupek_data/users/malvarez/projects/regmutsig/models/model_4/2_signature_extraction_and_plotting/regional+SBS/QC/compare_pvalues_null_features/7_corr_pvals_plot.jpg
+----------------------
 MBD4,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/hg18_to_hg19/bed_hg19/hg19_lifted_no_cups_blacklist_MBD4.bed
 SETD2,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/DNA_repair/MMR/MSH6_SETD2_H3K36me3_guominli/2_fold_enrichment_vs_input/bedgraphs_fold_enrich/SRR13314134_sorted_FE.bdg
 53BP1,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/DNA_repair/DSBR/NHEJ/XRCC4_RAD51_53BP1/53BP1/HWNTLBGX3_53BP1_G1_OHT_17s005725-1-1_Clouaire_lane117s005725_sequence_normalized.bw
 KAT2A,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/res/KAT2A_Signal_pooled_samples.bed
 CREBBP,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/res/CREBBP_Signal_pooled_samples.bed
+
+
+- due to BETTER prediction of even chromosomes' coefficients with SBS96 odd chr than with the feature itself's odd chr
+@ /g/strcombio/fsupek_data/users/malvarez/projects/regmutsig/models/model_5/2_signature_extraction_and_plotting/regional+SBS/NMF/QC/consistency/coefficients_RF_predictions/feature_wise/SBS96-odds_vs_regfeat-evens/res_reg_feat_SBS96_scatter.jpg
+------------------------
+RepliSeq,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/replication_time/fran_pooled_bins_replication_time/fran_legacy_parsed/RepliSeq_pooled8_merged_1-3_vs_4-6.bed
+RMDflat,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/replication_time/RMDflat-score_1mb_windows_marina/RMDflat_window_weights.bed
+MSH6,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/DNA_repair/MMR/MSH6_SETD2_H3K36me3_guominli/2_fold_enrichment_vs_input/bedgraphs_fold_enrich/SRR13314132_sorted_FE.bdg
+H3K36me2,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/histone_methylation_and_DHS/H3K36me2/pooled_samples/pooled_all/collapse_ranges/H3K36me2_pooled_GSE118954-149670-175750.all_chr.collapsed_ranges.bed.gz
+OGG1,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/DNA_repair/BER/OGG1/chipseq/gaps_score0/OGG1_GOX60_hg19_no_cups_blacklist_doublechecked__gaps-to-score-0.bed
+BRCA2,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/DNA_repair/DSBR/HDR/BRCA2/pooled_collapsed_gaps0/res/GSM3908737_BRCA2_Signal_pooled_samples.bed
+RAD51,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/DNA_repair/DSBR/NHEJ/XRCC4_RAD51_53BP1/RAD51/RAD51_hg19_normalized.bw
+XRCC4_clouaire,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/DNA_repair/DSBR/NHEJ/XRCC4_RAD51_53BP1/XRCC4/XRCC4_hg19_normalized.bw
+BPDEdG,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/DNA_repair/NER/tobacco_smoking/tXR_seq/merged_strands/pooled_collapsed_gaps0/res/GSM2575211_GM1HB_Signal_pooled_samples.bed
+UV_64PP,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/DNA_repair/NER/UV/XR_seq/merged_strands/6_4PP/NHF1/5min/pooled_collapsed_gaps0/res/GSM1985857_NHF164_5min_Signal_pooled_samples.bed
+BRCA1,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/res/BRCA1_Signal_pooled_samples.bed
+CHD1,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/res/CHD1_Signal_pooled_samples.bed
+CHD2,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/res/CHD2_Signal_pooled_samples.bed
+CHD4,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/res/CHD4_Signal_pooled_samples.bed
+CHD7,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/res/CHD7_Signal_pooled_samples.bed
+EP300,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/res/EP300_Signal_pooled_samples.bed
+EZH2,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/res/EZH2_Signal_pooled_samples.bed
+HDAC1,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/res/HDAC1_Signal_pooled_samples.bed
+HDAC2,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/res/HDAC2_Signal_pooled_samples.bed
+HDAC6,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/res/HDAC6_Signal_pooled_samples.bed
+KAT2B,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/res/KAT2B_Signal_pooled_samples.bed
+KDM1A,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/res/KDM1A_Signal_pooled_samples.bed
+KDM4A,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/res/KDM4A_Signal_pooled_samples.bed
+KDM5A,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/res/KDM5A_Signal_pooled_samples.bed
+KDM5B,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/res/KDM5B_Signal_pooled_samples.bed
+RAD21,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/res/RAD21_Signal_pooled_samples.bed
+SETDB1,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/res/SETDB1_Signal_pooled_samples.bed
+SIRT6,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/res/SIRT6_Signal_pooled_samples.bed
+SMARCA4,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/hg18_to_hg19/bed_hg19/hg19_lifted_no_cups_blacklist_SMARCA4.bed
+SMARCB1,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/hg18_to_hg19/bed_hg19/hg19_lifted_no_cups_blacklist_SMARCB1.bed
+SMARCC1,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/hg18_to_hg19/bed_hg19/hg19_lifted_no_cups_blacklist_SMARCC1.bed
+SMARCC2,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/hg18_to_hg19/bed_hg19/hg19_lifted_no_cups_blacklist_SMARCC2.bed
+SUZ12,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/res/SUZ12_Signal_pooled_samples.bed
+XRCC4_encode,/g/strcombio/fsupek_cancer3/malvarez/chromatin_info/protein_binding/ENCODE/pooled_collapsed_gaps0/hg18_to_hg19/bed_hg19/hg19_lifted_no_cups_blacklist_XRCC4.bed

@@ -84,12 +84,14 @@ reg_table = read_csv(existing_file) %>%
   rename_all(~str_replace_all(., "_SNVs|_k50", "")) %>%
   select(tri) %>% 
   table %>%
-  as.data.frame## in case there are no mutations left after mapping to good_mappability_regions
+  as.data.frame
+
+## in case there are no mutations left after mapping to good_mappability_regions
 if(nrow(reg_table)!=0){
   
   reg_table = reg_table %>%
     rename("mutcount" = "Freq",
-           "SBS96" = ".") %>% 
+           "SBS96" = "tri") %>% 
     ## add offset
     merge(offset, all = T) %>%
     replace_na(list(mutcount = 0)) %>% 

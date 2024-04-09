@@ -1,8 +1,6 @@
 TODO
 	in cases where 1 signature (similar SBS spectra) gets split into 2 signatures (regional spectra) --> check exposures of the split signatures: are they associated with different genotypes in our cell line dataset?
 	
-	align parts of the plot
-
 	An example of 'bi-cross-validation' (blanking out a few cells here and there) usage for mutational signatures extraction. https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009119
 	Perhaps interesting – the conceptually similar paper I mentioned, looking at regional distribution to decompose signatures (germline variants) https://www.science.org/doi/10.1126/science.aba7408  It uses the „reflection test“ method to select genomic resolution (a metaparameter of the method) and to discard individual signatures – that test would be related to ours splitting into odd/even chromosomes.
 
@@ -11,16 +9,61 @@ TODO
 
 
 UPD10: model_5
-	only
+
+	only tumor samples:
 		500 colorectal	filter(OriginalType=="Colorectum" & tissue=="colorectum")
 		500 lung NSCC	filter(OriginalType=="Lung_Non-small cell carcinoma")
 		500 melanoma	filter(OriginalType %in% c("Skin", "MELA-AU", "SKCM", "SKCM_Melanoma"))
-	removed 4 features that did not have a ks pval <0.1 in real vs. null features pvalues correlation (in cell lines)
-		SETD2
-		53BP1
-		KAT2A
-		CREBBP
-	added DHS, as positive control: UV-mutated melanomas and tobacco-mutated lung cancers should have an enrichment of mutations in DHS regions
+	
+	removed features
+		- that did not have a ks pval <0.1 in real vs. null features pvalues correlation (in cell lines) @ /g/strcombio/fsupek_data/users/malvarez/projects/regmutsig/models/model_4/2_signature_extraction_and_plotting/regional+SBS/QC/compare_pvalues_null_features/7_corr_pvals_plot.jpg
+			SETD2
+			53BP1
+			KAT2A
+			CREBBP
+		- due to BETTER prediction of even chromosomes' coefficients with SBS96 odd chr than with the feature itself's odd chr ; @ /g/strcombio/fsupek_data/users/malvarez/projects/regmutsig/models/model_5/2_signature_extraction_and_plotting/regional+SBS/NMF/QC/consistency/coefficients_RF_predictions/feature_wise/SBS96-odds_vs_regfeat-evens/res_reg_feat_SBS96_scatter.jpg
+			RepliSeq
+			RMDflat
+			MSH6
+			H3K36me2
+			OGG1
+			BRCA2
+			RAD51
+			XRCC4_clouaire
+			BPDEdG
+			UV_64PP
+			BRCA1
+			CHD1
+			CHD2
+			CHD4
+			CHD7
+			EP300
+			EZH2
+			HDAC1
+			HDAC2
+			HDAC6
+			KAT2B
+			KDM1A
+			KDM4A
+			KDM5A
+			KDM5B
+			RAD21
+			SETDB1
+			SIRT6
+			SMARCA4
+			SMARCB1
+			SMARCC1
+			SMARCC2
+			SUZ12
+			XRCC4_encode
+				
+	added features
+		DHS
+			positive control: UV-mutated melanomas and tobacco-mutated lung cancers should have an enrichment of mutations in DHS regions
+		hairpins mutated by A3A
+		several nonB DNA structures
+		first few PC components of Maia's matrix of presence/absence of mut. clusters (same event or recurrent) within 10kb windows
+			each component ideally should represent 1/few mutagenic agents, such as AID etc. (A3A not since A3A-target motifs were removed a priori)
 
 UPD9: model_4
 	calculated each feature's cutoff score based on the score interval with a maximum decrease of normalized mut load across all pooled samples
